@@ -28,6 +28,7 @@ import { qwenImage3 } from "./qwen-image-3";
 import { recraft41 } from "./recraft-4.1";
 import { seedance2, seedance2Fast, seedance2Mini } from "./seedance-2";
 import { seedance25, seedance25Edit, seedance25Extend } from "./seedance-2.5";
+import { magi2 } from "./magi-2";
 import { soul2, soulCinema } from "./soul";
 import type { ModelEntry } from "./types";
 import { wan26 } from "./wan-2.6";
@@ -40,6 +41,7 @@ export const MODELS: readonly ModelEntry[] = [
   soul2,
   soulCinema,
   seedance25,
+  magi2,
   seedance25Edit,
   seedance25Extend,
   seedance2,

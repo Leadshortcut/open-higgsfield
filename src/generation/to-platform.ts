@@ -19,6 +19,7 @@ const MAP: Record<string, Mapper> = {
   "seedance-2.5": (plane) => mapSeedance(plane, "bytedance/seedance-2.5"),
   "seedance-2.5-edit": (plane) => mapSeedanceSource(plane, "bytedance/seedance-2.5/video-edit", false),
   "seedance-2.5-extend": (plane) => mapSeedanceSource(plane, "bytedance/seedance-2.5/video-extend", true),
+  "magi-2": mapMagi2,
 };
 
 export function toPlatform(plane: GenerationPlane): Mapped {
@@ -92,6 +93,40 @@ function mapKlingMotion(plane: GenerationPlane, path: string): Mapped {
       character_orientation: plane.settings.characterOrientation,
     },
   };
+}
+
+function mapMagi2(plane: GenerationPlane): Mapped {
+  const start = urls(plane, "start")[0];
+  const end = urls(plane, "end")[0];
+  const refs = urls(plane, "reference");
+  const videos = urls(plane, "video");
+  const audios = urls(plane, "audio");
+  const text = plane.prompt.text.trim();
+  const body: Record<string, unknown> = {
+    ...(text ? { prompt: text } : {}),
+    aspect_ratio: plane.settings.aspectRatio,
+    resolution: plane.settings.resolution,
+    duration: plane.settings.duration,
+    generate_audio: plane.settings.generateAudio,
+  };
+  if (start) {
+    return {
+      path: "sand/magi-2/image-to-video",
+      body: { ...body, image_url: start, ...(end ? { end_image_url: end } : {}) },
+    };
+  }
+  if (refs.length || videos.length || audios.length) {
+    return {
+      path: "sand/magi-2/reference-to-video",
+      body: {
+        ...body,
+        ...(refs.length ? { image_urls: refs } : {}),
+        ...(videos.length ? { video_urls: videos } : {}),
+        ...(audios.length ? { audio_urls: audios } : {}),
+      },
+    };
+  }
+  return { path: "sand/magi-2/text-to-video", body: { ...body, prompt: plane.prompt.text } };
 }
 
 function mapByPaths(plane: GenerationPlane, spec: PlatformPaths): Mapped {
